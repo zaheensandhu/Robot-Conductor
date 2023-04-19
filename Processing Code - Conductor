@@ -1,0 +1,149 @@
+
+import processing.sound.*;
+
+import oscP5.*;
+import netP5.*;
+
+
+PImage bg;
+PImage redbg;
+PImage greenbg;
+PImage bluebg;
+PImage violetbg;
+
+float ax,ay,bx,cx,dx;
+
+float circleRadius;
+
+OscP5 dataSender;
+NetAddress myRemoteLocation;
+
+int robotState = 0;
+int sendPort = 9000;
+String messageAddress = "/robotState"; 
+
+SoundFile bgmusic;
+SoundFile rednote;
+SoundFile greennote;
+SoundFile bluenote;
+SoundFile violetnote;
+
+void setup() {
+  size(1280, 720);
+  dataSender = new OscP5(this, 12000);
+  myRemoteLocation = new NetAddress("localhost", sendPort);
+  bgmusic = new SoundFile (this, "assets/base.mp3");
+  rednote = new SoundFile (this, "assets/first.wav");
+  greennote = new SoundFile (this, "assets/second.wav");
+  bluenote = new SoundFile (this, "assets/third.wav");
+  violetnote = new SoundFile (this, "assets/fourth.wav");
+  bgmusic.amp(0.05);
+  rednote.amp(0.2);
+  greennote.amp(0.2);
+  bluenote.amp(0.8);
+  violetnote.amp(0.5);
+
+
+  //bgmusic.play();
+  bg = loadImage("editstage3.jpg");
+  redbg = loadImage("red.jpg");
+  greenbg = loadImage("green.jpg");
+  bluebg = loadImage("blue.jpg");
+  violetbg = loadImage("violet.jpg");
+  circleRadius = 30;
+  ax=256;
+  bx=512;
+  cx=768;
+  dx=1024;
+  ay=690;
+  
+}
+
+void draw()
+{
+  background(bg);
+  noStroke();
+  fill(255);
+  circle(ax,ay,circleRadius);
+  circle(bx,ay,circleRadius);
+  circle(cx,ay,circleRadius);
+  circle(dx,ay,circleRadius);
+
+    if(dist(mouseX, mouseY, ax, ay) < circleRadius)
+    {
+    background(redbg);
+    robotState=1;
+    sendMessage();
+    fill(255,0,0);
+    circle(ax,ay,circleRadius);
+    fill(255);
+    circle(bx,ay,circleRadius);
+    circle(cx,ay,circleRadius);
+    circle(dx,ay,circleRadius);
+    
+    if(!rednote.isPlaying()){
+    rednote.play();
+  }
+
+    }
+    else if(dist(mouseX, mouseY, bx, ay) < circleRadius)
+    {
+    background(greenbg);
+    robotState=2;
+    sendMessage();
+    fill(0,255,0);
+    circle(bx,ay,circleRadius);
+    fill(255);
+    circle(ax,ay,circleRadius);
+    circle(cx,ay,circleRadius);
+    circle(dx,ay,circleRadius);
+    
+     if(!greennote.isPlaying()){
+    greennote.play();
+  }
+
+    }
+     else if(dist(mouseX, mouseY, cx, ay) < circleRadius)
+    {
+    background(bluebg);
+    robotState=3;
+    sendMessage();
+    fill(0,0,255);
+    circle(cx,ay,circleRadius);
+    fill(255);
+    circle(ax,ay,circleRadius);
+    circle(bx,ay,circleRadius);
+    circle(dx,ay,circleRadius);
+    
+     if(!bluenote.isPlaying()){
+    bluenote.play();
+  }
+    
+    }
+     else if(dist(mouseX, mouseY, dx, ay) < circleRadius)
+    {
+    background(violetbg);
+    robotState=4;
+    sendMessage();
+    fill(90,40,80);
+    circle(dx,ay,circleRadius);
+    fill(255);
+    circle(ax,ay,circleRadius);
+    circle(bx,ay,circleRadius);
+    circle(cx,ay,circleRadius);
+    
+     if(!violetnote.isPlaying()){
+    violetnote.play();
+  }
+    
+    }
+
+}
+
+void sendMessage()
+{
+  OscMessage myMessage = new OscMessage(messageAddress);
+  myMessage.add(robotState);
+  dataSender.send(myMessage, myRemoteLocation);
+  println("sending message: " + myMessage);
+}
